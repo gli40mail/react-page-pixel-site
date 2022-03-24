@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<head>
+    <title>pixel test page</title>
+    <script>
+        function event2Label(evt) {
+            lbl = '';
+            for(i = 0; i < evt.length; i++) {
+                c = evt[i];
+                if(c >= 'A' && c <= 'Z' && lbl.length != 0)
+                    lbl += ' ';
+                lbl += c;
+            }
+            return lbl;
+        }
+
+        let pixel = '402548985015126';
+
+        let events = [
+                'AddToWishlist',
+                'AddToCart',
+                'InitiateCheckout',
+                'Purchase',
+                'Subscribe',
+                'CompleteRegistration',
+        ];
+
+    </script>
+    <!-- Meta Pixel Code -->
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', pixel);
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=5214619215266885&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+</head>
+<body>
+    <div id="root-container"></div>
+    <script type="text/babel" data-presets="env,stage-3,react">
+        class EventButton extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    event: props.event
+                };
+
+                // This binding is necessary to make `this` work in the callback
+                this.handleClick = this.handleClick.bind(this);
+            }
+
+            handleClick() {
+                fbq('track', this.state.event);
+                alert(this.state.event);
+            }
+
+            render() {
+                return (
+                    <li key={this.state.event}>
+                        <button onClick={this.handleClick}>{event2Label(this.state.event)}</button>
+                    </li>
+                );
+            }
+        }
+
+        class EventList extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    pixel: props.pixel,
+                    events: props.events,
+                }
+            }
+
+            render() {
+                return (
+                    <div>
+                    <h1>Pixel {this.state.pixel}</h1>
+                    <hr />
+                    <ul id="events">
+                        {this.state.events.map(event => (
+                            <EventButton event={event} />
+                        ))}
+                    </ul>
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <EventList pixel={pixel} events={events} />,
+            document.getElementById('root-container')
+        );
+    </script>
+</body>
